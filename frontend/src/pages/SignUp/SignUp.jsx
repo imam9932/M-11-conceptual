@@ -3,12 +3,22 @@ import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../../hooks/useAuth'
 import { toast } from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
+import { useForm } from "react-hook-form"
+
 
 const SignUp = () => {
   const { createUser, updateUserProfile, signInWithGoogle, loading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state || '/'
+
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm()
 
   // form submit handler
   const handleSubmit = async event => {
@@ -75,6 +85,7 @@ const SignUp = () => {
                 placeholder='Enter Your Name Here'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
                 data-temp-mail-org='0'
+                {...register('name',{required:'Name is required'})}
               />
             </div>
             {/* Image */}
@@ -86,6 +97,7 @@ const SignUp = () => {
                 Profile Image
               </label>
               <input
+              {...register('image',{required:'Image is required'})}
                 name='image'
                 type='file'
                 id='image'
@@ -108,7 +120,10 @@ const SignUp = () => {
               <label htmlFor='email' className='block mb-2 text-sm'>
                 Email address
               </label>
-              <input
+              <input {...register('email',{required:'Email is required',pattern:{
+                value:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$,
+                message:'Please enter a valid email address'
+              }})}
                 type='email'
                 name='email'
                 id='email'
@@ -124,7 +139,7 @@ const SignUp = () => {
                   Password
                 </label>
               </div>
-              <input
+              <input {...register('password',{required:'Password is required'})}
                 type='password'
                 name='password'
                 autoComplete='new-password'
