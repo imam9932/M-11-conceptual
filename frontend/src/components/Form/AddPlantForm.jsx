@@ -1,7 +1,42 @@
+import { useForm } from "react-hook-form";
+import { imageUpload } from "../../Utilis";
+import useAuth from "../../hooks/useAuth";
+
 const AddPlantForm = () => {
+  const {user}=useAuth()
+
+  const {
+      register,
+      handleSubmit,
+      watch,
+      formState: { errors },
+    } = useForm();
+  
+    console.log(errors);
+
+    const onSubmit=async data=>{
+      console.log(data);
+      const {name,description,price,category,image,quantity}=data;
+      const imageFile=image[0];
+      const imageURL=await imageUpload(imageFile)
+      const plantData={
+        image:imageURL,
+        name,
+        description,
+        quantity:Number(quantity),
+        price:Number(price),
+        category,
+        seller:{
+          image:user?.photoURL,
+          name:user?.displayName,
+          email:user?.email
+        }
+      }
+      console.table(plantData);
+    }
   return (
     <div className='w-full min-h-[calc(100vh-40px)] flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50'>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-10'>
           <div className='space-y-6'>
             {/* Name */}
@@ -11,12 +46,18 @@ const AddPlantForm = () => {
               </label>
               <input
                 className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
-                name='name'
+                
                 id='name'
                 type='text'
                 placeholder='Plant Name'
-                required
+                
+                {...register('name',{
+                  required:'Name is required'
+                })}
               />
+               {
+                errors.name && <p className='text-red-500  '>Name is Required</p>
+              }
             </div>
             {/* Category */}
             <div className='space-y-1 text-sm'>
@@ -26,7 +67,10 @@ const AddPlantForm = () => {
               <select
                 required
                 className='w-full px-4 py-3 border-lime-300 focus:outline-lime-500 rounded-md bg-white'
-                name='category'
+                 
+                {...register('category',{
+                  required:'Category is required'
+                })}
               >
                 <option value='Indoor'>Indoor</option>
                 <option value='Outdoor'>Outdoor</option>
@@ -34,6 +78,9 @@ const AddPlantForm = () => {
                 <option value='Flowering'>Flowering</option>
               </select>
             </div>
+            {
+                errors.category&& <p className='text-red-500  '>Category is Required</p>
+              }
             {/* Description */}
             <div className='space-y-1 text-sm'>
               <label htmlFor='description' className='block text-gray-600'>
@@ -44,8 +91,14 @@ const AddPlantForm = () => {
                 id='description'
                 placeholder='Write plant description here...'
                 className='block rounded-md focus:lime-300 w-full h-32 px-4 py-3 text-gray-800  border border-lime-300 bg-white focus:outline-lime-500 '
-                name='description'
+                
+                {...register('description',{
+                  required:'Description is required'
+                })}
               ></textarea>
+              {
+                errors.description && <p className='text-red-500  '>Description is Required</p>
+              }
             </div>
           </div>
           <div className='space-y-6 flex flex-col'>
@@ -58,12 +111,18 @@ const AddPlantForm = () => {
                 </label>
                 <input
                   className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
-                  name='price'
+                  
                   id='price'
                   type='number'
                   placeholder='Price per unit'
-                  required
+                   
+                  {...register('price',{
+                  required:'Price is required'
+                })}
                 />
+                {
+                errors.price && <p className='text-red-500  '>Price is Required</p>
+              }
               </div>
 
               {/* Quantity */}
@@ -73,12 +132,18 @@ const AddPlantForm = () => {
                 </label>
                 <input
                   className='w-full px-4 py-3 text-gray-800 border border-lime-300 focus:outline-lime-500 rounded-md bg-white'
-                  name='quantity'
+                  
                   id='quantity'
                   type='number'
                   placeholder='Available quantity'
                   required
+                  {...register('quantity',{
+                  required:'Quantity is required'
+                })}
                 />
+                {
+                errors.quantity && <p className='text-red-500  '>Quantity is Required</p>
+              }
               </div>
             </div>
             {/* Image */}
@@ -89,10 +154,13 @@ const AddPlantForm = () => {
                     <input
                       className='text-sm cursor-pointer w-36 hidden'
                       type='file'
-                      name='image'
+                       
                       id='image'
                       accept='image/*'
                       hidden
+                      {...register('image',{
+                  required:'Image is required'
+                })}
                     />
                     <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
                       Upload
